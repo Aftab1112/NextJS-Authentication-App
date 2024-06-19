@@ -18,7 +18,9 @@ export const POST = async (request: NextRequest) => {
         {
           error: "User already exists. Login using email and password",
         },
-        { status: 400 }
+        {
+          status: 400,
+        }
       );
     }
 
@@ -48,14 +50,18 @@ export const POST = async (request: NextRequest) => {
         {
           error: error.message,
         },
-        { status: 500 }
+        {
+          status: 500,
+        }
       );
     } else {
       return NextResponse.json(
         {
           error: "An unknown error occured",
         },
-        { status: 500 }
+        {
+          status: 500,
+        }
       );
     }
   }
