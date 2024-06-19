@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import Loader from "../components/Loader";
 
 interface User {
   email: string;
@@ -18,19 +19,21 @@ const LoginPage: React.FC = () => {
     password: "",
   });
 
-  const [buttonDisabled, setButtonDisabled] = useState<boolean>(false);
+  const [buttonDisabled, setButtonDisabled] = useState<boolean>(true);
 
   const [loading, setLoading] = useState<boolean>(false);
 
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     setUser({ ...user, [e.target.id]: e.target.value });
   };
 
   const onLogin = async () => {
+    if (buttonDisabled) return;
+
     try {
       setLoading(true);
-      axios.post("/api/users/login", user);
-      toast.success("Login successfull !");
+      await axios.post("/api/users/login", user);
+      toast.success("Logged in successfully");
       router.push("/");
     } catch (error) {
       if (error instanceof Error) {
@@ -52,12 +55,13 @@ const LoginPage: React.FC = () => {
   }, [user]);
 
   return (
-    <div className="flex flex-col justify-center items-center min-h-screen py-2">
-      <h1 className="mb-2 text-2xl ">{loading ? "Logging In..." : "Login"}</h1>
+    <div className="flex flex-col items-center justify-center min-h-screen py-2">
+      <Loader loading={loading} />
+      <h1 className="mb-2 text-2xl ">Login</h1>
 
       <label htmlFor="email">email</label>
       <input
-        className="p-2 rounded-lg border-none mt-1 text-black"
+        className="p-2 mt-1 text-black border-none rounded-lg"
         type="email"
         id="email"
         value={user.email}
@@ -67,7 +71,7 @@ const LoginPage: React.FC = () => {
 
       <label htmlFor="password">password</label>
       <input
-        className="p-2 rounded-lg border-none mt-1 text-black"
+        className="p-2 mt-1 text-black border-none rounded-lg"
         type="password"
         id="password"
         value={user.password}
@@ -76,10 +80,14 @@ const LoginPage: React.FC = () => {
       />
 
       <button
-        className="py-2 px-4 bg-blue-800 rounded-lg mt-4 transition duration-200 hover:bg-blue-600"
+        className={`py-2 px-4 ${
+          buttonDisabled
+            ? "bg-gray-400 cursor-default"
+            : "bg-blue-800 hover:bg-blue-600 "
+        }  rounded-lg mt-4 transition duration-200 `}
         onClick={onLogin}
       >
-        {buttonDisabled ? "No Login" : "Login"}
+        Login
       </button>
 
       <div className="flex mt-4">
