@@ -36,10 +36,11 @@ const LoginPage: React.FC = () => {
       toast.success("Logged in successfully");
       router.push("/");
     } catch (error) {
-      if (error instanceof Error) {
-        toast.error(error.message);
+      if (axios.isAxiosError(error) && error.response) {
+        const errorMessage = error.response.data.error;
+        toast.error(errorMessage);
       } else {
-        console.log("Login Failed");
+        toast.error("Login Failed");
       }
     } finally {
       setLoading(false);
