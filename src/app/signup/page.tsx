@@ -102,7 +102,7 @@ const SignUpPage: React.FC = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2">
       <Loader loading={loading} />
-      <h1 className="mb-5 text-3xl tracking-wider">Sign up here</h1>
+      <h1 className="mb-2 text-3xl tracking-wider">Sign up here</h1>
 
       <input
         className="px-4 py-2 my-4 text-black border-none rounded-lg"

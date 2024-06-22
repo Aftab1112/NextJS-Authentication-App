@@ -59,11 +59,10 @@ const LoginPage: React.FC = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2">
       <Loader loading={loading} />
-      <h1 className="mb-2 text-2xl ">Login</h1>
+      <h1 className="mb-2 text-3xl ">Login</h1>
 
-      <label htmlFor="email">email</label>
       <input
-        className="p-2 mt-1 text-black border-none rounded-lg"
+        className="px-4 py-2 my-4 text-black border-none rounded-lg"
         type="email"
         id="email"
         value={user.email}
@@ -71,9 +70,8 @@ const LoginPage: React.FC = () => {
         placeholder="email"
       />
 
-      <label htmlFor="password">password</label>
       <input
-        className="p-2 mt-1 text-black border-none rounded-lg"
+        className="px-4 py-2 my-4 text-black border-none rounded-lg"
         type="password"
         id="password"
         value={user.password}
@@ -82,7 +80,7 @@ const LoginPage: React.FC = () => {
       />
 
       <button
-        className={`py-2 px-4 ${
+        className={`py-2 px-6 ${
           buttonDisabled
             ? "bg-gray-400 cursor-default"
             : "bg-blue-800 hover:bg-blue-600 "
