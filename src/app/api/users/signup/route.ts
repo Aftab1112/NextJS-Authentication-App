@@ -15,7 +15,7 @@ export const POST = async (request: NextRequest) => {
     if (user) {
       return NextResponse.json(
         {
-          error: "User already exists. Login using email and password",
+          error: "User already exists. Login below",
         },
         {
           status: 400,

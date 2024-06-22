@@ -78,10 +78,11 @@ const SignUpPage: React.FC = () => {
       toast.success("Signed up successfully");
       router.push("/login");
     } catch (error) {
-      if (error instanceof Error) {
-        toast.error(error.message);
+      if (axios.isAxiosError(error) && error.response) {
+        const errorMessage = error.response.data.error;
+        toast.error(errorMessage);
       } else {
-        console.log("Sign up failed");
+        toast.error("Login Failed");
       }
     } finally {
       setLoading(false);
