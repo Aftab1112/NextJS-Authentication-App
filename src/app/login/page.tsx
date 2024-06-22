@@ -32,8 +32,9 @@ const LoginPage: React.FC = () => {
 
     try {
       setLoading(true);
-      await axios.post("/api/users/login", user);
-      toast.success("Logged in successfully");
+      const response = await axios.post("/api/users/login", user);
+      const successMessage = response.data.message;
+      toast.success(successMessage);
       router.push("/");
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
