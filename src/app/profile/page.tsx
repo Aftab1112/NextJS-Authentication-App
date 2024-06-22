@@ -35,6 +35,8 @@ const ProfilePage: React.FC = () => {
       setLoading(true);
       const response = await axios.get("/api/users/me");
       setData(response.data.data._id);
+      const successMessage = response.data.message;
+      toast.success(successMessage);
     } catch (error) {
       if (axios.isAxiosError(error) && error.message) {
         const errorMessage = error.response?.data.message;
