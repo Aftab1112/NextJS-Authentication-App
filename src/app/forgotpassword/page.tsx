@@ -1,11 +1,15 @@
 "use client";
+import axios from "axios";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import Loader from "../components/Loader";
 
 const ForgotPasswordPage: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [emailError, setEmailError] = useState<string>("");
   const [buttonDisabled, setButtonDisabled] = useState<boolean>(true);
+  const [loading, setloading] = useState<boolean>(false);
 
   const validateEmail = (email: string): string | null => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -29,11 +33,28 @@ const ForgotPasswordPage: React.FC = () => {
     setButtonDisabled(!isEmailValid);
   }, [email]);
 
-  const onEmailSubmit = () => {
+  const onEmailSubmit = async () => {
     if (buttonDisabled) return;
+
+    try {
+      setloading(true);
+      const response = await axios.post("/api/users/forgotpassword", { email });
+      const successMessage = response.data.message;
+      toast.success(successMessage);
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        const errorMessage = error.response.data.error;
+        toast.error(errorMessage);
+      } else {
+        toast.error("Internal server error");
+      }
+    } finally {
+      setloading(false);
+    }
   };
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2">
+      <Loader loading={loading} />
       <div className="flex flex-col justify-center items-center w-[320px]">
         <h1 className="mb-2 text-3xl">Forgot Password</h1>
         <p className="">Enter your email and we'll send you a link </p>

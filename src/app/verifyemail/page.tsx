@@ -3,15 +3,18 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import Loader from "../components/Loader";
 
 const VerifyEmailPage = () => {
   const [token, setToken] = useState<string>("");
   const [verified, setVerified] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
 
   const verifyUserEmail = async () => {
     try {
+      setLoading(true);
       const response = await axios.post("/api/users/verifyemail", { token });
       const successMessage = response.data.message;
       toast.success(successMessage);
@@ -25,6 +28,8 @@ const VerifyEmailPage = () => {
       } else {
         toast.error("Internal server error");
       }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -41,6 +46,7 @@ const VerifyEmailPage = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2">
+      <Loader loading={loading} />
       <h1 className="text-4xl">Verify Email</h1>
       <h2 className="mt-3 text-2xl">
         {token ? `${token}` : "No token yet..."}
