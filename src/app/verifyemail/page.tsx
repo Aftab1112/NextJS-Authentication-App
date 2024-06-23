@@ -1,11 +1,11 @@
 "use client";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import Loader from "../components/Loader";
 
-const VerifyEmailPage = () => {
+const VerifyEmailPage: React.FC = () => {
   const [token, setToken] = useState<string>("");
   const [verified, setVerified] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);

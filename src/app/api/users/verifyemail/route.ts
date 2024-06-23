@@ -17,7 +17,7 @@ export const POST = async (request: NextRequest) => {
     if (!user) {
       return NextResponse.json(
         {
-          error: "User not found",
+          error: "User already verified or token expired",
         },
         {
           status: 400,
