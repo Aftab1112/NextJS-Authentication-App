@@ -1,6 +1,6 @@
 "use client";
 import axios from "axios";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
@@ -8,11 +8,15 @@ const VerifyEmailPage = () => {
   const [token, setToken] = useState<string>("");
   const [verified, setVerified] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
+  const router = useRouter();
 
   const verifyUserEmail = async () => {
     try {
-      await axios.post("/api/users/verifyemail", { token });
+      const response = await axios.post("/api/users/verifyemail", { token });
+      const successMessage = response.data.message;
+      toast.success(successMessage);
       setVerified(true);
+      router.push("/");
     } catch (error) {
       setError(true);
       if (axios.isAxiosError(error) && error.response) {
@@ -45,7 +49,7 @@ const VerifyEmailPage = () => {
       {verified && (
         <div>
           <h2 className="text-2xl">Email verified</h2>
-          <Link href="/login">Login</Link>
+          <h2 className="text-2xl">Redirecting to login page...</h2>
         </div>
       )}
 
