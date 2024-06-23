@@ -6,10 +6,10 @@ interface IUser extends Document {
   password: string;
   isVerified: boolean;
   isAdmin: boolean;
-  forgotPasswordToken: string;
-  forgotPasswordTokenExpiry: Date;
-  verifyToken: string;
-  verifyTokenExpiry: Date;
+  forgotPasswordToken: string | undefined;
+  forgotPasswordTokenExpiry: Date | undefined;
+  verifyToken: string | undefined;
+  verifyTokenExpiry: Date | undefined;
 }
 
 const userSchema: Schema<IUser> = new Schema(

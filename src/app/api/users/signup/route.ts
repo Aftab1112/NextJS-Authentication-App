@@ -2,6 +2,7 @@ import { connectToMongoDB } from "@/database/dbConfig";
 import User from "@/models/userModel";
 import { NextRequest, NextResponse } from "next/server";
 import bcryptjs from "bcryptjs";
+import { sendEmail } from "@/helpers/mailer";
 
 connectToMongoDB();
 
@@ -33,6 +34,9 @@ export const POST = async (request: NextRequest) => {
     });
 
     const savedUser = await newUser.save();
+
+    const userId = (savedUser._id as string).toString();
+    await sendEmail({ email, emailType: "VERIFY", userId });
 
     return NextResponse.json(
       {
