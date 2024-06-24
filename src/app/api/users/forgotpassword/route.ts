@@ -17,7 +17,7 @@ export const POST = async (request: NextRequest) => {
         {
           error: "User dosen't exists",
         },
-        { status: 500 }
+        { status: 404 }
       );
     }
 
@@ -29,25 +29,16 @@ export const POST = async (request: NextRequest) => {
         message: "Email sent",
         success: true,
       },
-      { status: 201 }
+      { status: 200 }
     );
   } catch (error) {
-    if (error instanceof Error) {
-      return NextResponse.json(
-        {
-          error: error.message,
-        },
-        { status: 500 }
-      );
-    } else {
-      return NextResponse.json(
-        {
-          error: "Error sending email",
-        },
-        {
-          status: 500,
-        }
-      );
-    }
+    console.error("Error in POST request : ", error);
+
+    return NextResponse.json(
+      {
+        error: error instanceof Error ? error.message : "Error sending email",
+      },
+      { status: 500 }
+    );
   }
 };

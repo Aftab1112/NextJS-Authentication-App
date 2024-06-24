@@ -15,8 +15,7 @@ const ForgotPasswordPage: React.FC = () => {
 
   const validateEmail = (email: string): string | null => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) return "Invalid email address";
-    return null;
+    return emailRegex.test(email) ? null : "Invalid email address";
   };
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
@@ -25,39 +24,35 @@ const ForgotPasswordPage: React.FC = () => {
 
     const error = validateEmail(emailValue);
     setEmailError(error ? error : "");
-    if (!error) {
-      setButtonDisabled(false);
-    }
+    setButtonDisabled(!!error);
   };
-
-  useEffect(() => {
-    const isEmailValid = !validateEmail(email);
-    setButtonDisabled(!isEmailValid);
-  }, [email]);
 
   const onEmailSubmit = async () => {
     if (buttonDisabled) return;
-
     try {
       setloading(true);
       const response = await axios.post("/api/users/forgotpassword", { email });
-      const successMessage = response.data.message;
-      toast.success(successMessage);
+      toast.success(response.data.message);
       router.push("/login");
     } catch (error) {
-      if (axios.isAxiosError(error) && error.response) {
-        const errorMessage = error.response.data.error;
-        toast.error(errorMessage);
-      } else {
-        toast.error("Internal server error");
-      }
+      const errorMessage =
+        axios.isAxiosError(error) && error.response
+          ? error.response.data.error
+          : "Internal Server Error";
+      toast.error(errorMessage);
     } finally {
       setloading(false);
     }
   };
+
+  useEffect(() => {
+    setButtonDisabled(!!validateEmail(email));
+  }, [email]);
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2">
       <Loader loading={loading} />
+
       <div className="flex flex-col justify-center items-center w-[320px]">
         <h1 className="mb-2 text-3xl">Forgot Password</h1>
         <p className="">Enter your email and we'll send you a link </p>
