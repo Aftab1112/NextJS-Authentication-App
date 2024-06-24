@@ -18,7 +18,7 @@ export const POST = async (request: NextRequest) => {
     if (!user) {
       return NextResponse.json(
         {
-          error: "Token expired, try after some time",
+          error: "Link Expired",
         },
         {
           status: 400,

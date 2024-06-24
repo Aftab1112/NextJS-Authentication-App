@@ -6,18 +6,31 @@ import { FaEye } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa";
 import Loader from "../components/Loader";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+
+interface Passwords {
+  password: string;
+  confirmPassword: string;
+}
+
+interface PasswordsErros {
+  password?: string;
+  confirmPassword?: string;
+}
 
 const SetNewPasswordPage: React.FC = () => {
-  const [password, setPassword] = useState<string>("");
-  const [confirmPassword, setConfirmPassword] = useState<string>("");
+  const [passwords, setPasswords] = useState<Passwords>({
+    password: "",
+    confirmPassword: "",
+  });
+  const [passwordErrors, setPasswordErrors] = useState<PasswordsErros>({});
   const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
   const [confirmPasswordVisible, setconfirmPasswordVisible] =
     useState<boolean>(false);
-  const [passwordError, setPasswordError] = useState<string>("");
-  const [confirmPasswordError, setConfirmPasswordError] = useState<string>("");
   const [buttonDisabled, setbuttonDisabled] = useState<boolean>(true);
   const [loading, setLoading] = useState<boolean>(false);
   const [token, setToken] = useState<string>("");
+  const [tokenExpiredError, setTokenExpiredError] = useState<boolean>(false);
   const router = useRouter();
 
   const validatePassword = (password: string): string | null => {
@@ -26,7 +39,7 @@ const SetNewPasswordPage: React.FC = () => {
   };
 
   const validateConfirmPassword = (confirmPassword: string): string | null => {
-    if (confirmPassword !== password) return "Passwords should match";
+    if (confirmPassword !== passwords.password) return "Passwords should match";
     return null;
   };
 
@@ -40,15 +53,21 @@ const SetNewPasswordPage: React.FC = () => {
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const { id, value } = e.target;
-    if (id === "password") {
-      setPassword(value);
-      const error = validatePassword(value);
-      setPasswordError(error ? error : "");
-    } else if (id === "confirmPassword") {
-      setConfirmPassword(value);
-      const error = validateConfirmPassword(value);
-      setConfirmPasswordError(error ? error : "");
+    setPasswords({ ...passwords, [id]: value });
+
+    let error: string | null = null;
+
+    switch (id) {
+      case "password":
+        error = validatePassword(value);
+        break;
+      case "confirmPassword":
+        error = validateConfirmPassword(value);
+        break;
+      default:
+        break;
     }
+    setPasswordErrors({ ...passwordErrors, [id]: error });
   };
 
   useEffect(() => {
@@ -58,16 +77,17 @@ const SetNewPasswordPage: React.FC = () => {
 
   useEffect((): void => {
     const isSubmitValid =
-      !validatePassword(password) && !validateConfirmPassword(confirmPassword);
+      !validatePassword(passwords.password) &&
+      !validateConfirmPassword(passwords.confirmPassword);
     setbuttonDisabled(!isSubmitValid);
-  }, [password, confirmPassword]);
+  }, [passwords]);
 
   const onPasswordsSubmit = async () => {
     if (buttonDisabled) return;
     try {
       setLoading(true);
       const response = await axios.post("/api/users/setnewpassword", {
-        password,
+        password: passwords.password,
         token,
       });
       const successMessage = response.data.message;
@@ -77,6 +97,7 @@ const SetNewPasswordPage: React.FC = () => {
       if (axios.isAxiosError(error) && error.response) {
         const errorMessage = error.response.data.error;
         toast.error(errorMessage);
+        setTokenExpiredError(true);
       } else {
         toast.error("Internal server error");
       }
@@ -96,7 +117,7 @@ const SetNewPasswordPage: React.FC = () => {
           className="px-4 py-2 my-4 text-black border-none rounded-lg"
           type={passwordVisible ? "text" : "password"}
           id="password"
-          value={password}
+          value={passwords.password}
           placeholder="Set new password"
           onChange={onChange}
         />
@@ -114,14 +135,16 @@ const SetNewPasswordPage: React.FC = () => {
           />
         )}
       </div>
-      {passwordError && <p className="text-red-500">{passwordError}</p>}
+      {passwordErrors.password && (
+        <p className="text-red-500">{passwordErrors.password}</p>
+      )}
 
       <div className="relative flex">
         <input
           className="px-4 py-2 my-4 text-black border-none rounded-lg"
           type={confirmPasswordVisible ? "text" : "password"}
           id="confirmPassword"
-          value={confirmPassword}
+          value={passwords.confirmPassword}
           placeholder="Confirm new password"
           onChange={onChange}
         />
@@ -139,8 +162,8 @@ const SetNewPasswordPage: React.FC = () => {
           />
         )}
       </div>
-      {confirmPasswordError && (
-        <p className="text-red-500">{confirmPasswordError}</p>
+      {passwordErrors.confirmPassword && (
+        <p className="text-red-500">{passwordErrors.confirmPassword}</p>
       )}
 
       <button
@@ -153,6 +176,18 @@ const SetNewPasswordPage: React.FC = () => {
       >
         Submit
       </button>
+
+      <div className="w-[322px] mt-3">
+        {tokenExpiredError && (
+          <h2 className="text-center text-base">
+            Link is expired. <br /> Please visit{" "}
+            <Link href="/forgotpassword" className="text-blue-400">
+              forgot password
+            </Link>{" "}
+            page
+          </h2>
+        )}
+      </div>
     </div>
   );
 };

@@ -83,7 +83,7 @@ const SignUpPage: React.FC = () => {
         const errorMessage = error.response.data.error;
         toast.error(errorMessage);
       } else {
-        toast.error("Login Failed");
+        toast.error("Signup Failed");
       }
     } finally {
       setLoading(false);
@@ -91,7 +91,7 @@ const SignUpPage: React.FC = () => {
   };
 
   useEffect(() => {
-    const isFormValid =
+    const isFormValid: boolean =
       !validateUsername(user.username) &&
       !validateEmail(user.email) &&
       !validatePassword(user.password);
