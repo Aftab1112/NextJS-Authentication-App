@@ -6,8 +6,8 @@ interface IUser extends Document {
   password: string;
   isVerified: boolean;
   isAdmin: boolean;
-  forgotPasswordToken: string | undefined;
-  forgotPasswordTokenExpiry: Date | undefined;
+  forgotPasswordToken: string | null;
+  forgotPasswordTokenExpiry: Date | null;
   verifyToken: string | undefined;
   verifyTokenExpiry: Date | undefined;
 }
