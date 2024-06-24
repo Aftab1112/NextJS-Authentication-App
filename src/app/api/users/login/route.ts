@@ -6,9 +6,9 @@ import jwt from "jsonwebtoken";
 
 connectToMongoDB();
 
-export const POST = async (req: NextRequest) => {
+export const POST = async (request: NextRequest) => {
   try {
-    const reqBody = await req.json();
+    const reqBody = await request.json();
     const { email, password } = reqBody;
 
     const user = await User.findOne({ email });
@@ -19,7 +19,7 @@ export const POST = async (req: NextRequest) => {
           error: "User doesn't exist, please signup",
         },
         {
-          status: 400,
+          status: 404,
         }
       );
     }
@@ -32,7 +32,7 @@ export const POST = async (req: NextRequest) => {
           error: "Invalid Password",
         },
         {
-          status: 400,
+          status: 401,
         }
       );
     }
@@ -52,27 +52,22 @@ export const POST = async (req: NextRequest) => {
       success: true,
     });
 
-    response.cookies.set("token", token, { httpOnly: true });
+    response.cookies.set("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 60 * 60 * 24,
+    });
     return response;
   } catch (error) {
-    if (error instanceof Error) {
-      return NextResponse.json(
-        {
-          error: error.message,
-        },
-        {
-          status: 500,
-        }
-      );
-    } else {
-      return NextResponse.json(
-        {
-          error: "An unknown error occured",
-        },
-        {
-          status: 500,
-        }
-      );
-    }
+    console.error("Login error : ", error);
+
+    return NextResponse.json(
+      {
+        error:
+          error instanceof Error ? error.message : "An unknown error occured",
+      },
+      { status: 500 }
+    );
   }
 };

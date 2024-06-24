@@ -20,16 +20,15 @@ const LoginPage: React.FC = () => {
   });
 
   const [buttonDisabled, setButtonDisabled] = useState<boolean>(true);
-
   const [loading, setLoading] = useState<boolean>(false);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    setUser({ ...user, [e.target.id]: e.target.value });
+    const { id, value } = e.target;
+    setUser({ ...user, [id]: value });
   };
 
   const onLogin = async () => {
     if (buttonDisabled) return;
-
     try {
       setLoading(true);
       const response = await axios.post("/api/users/login", user);
@@ -37,23 +36,19 @@ const LoginPage: React.FC = () => {
       toast.success(successMessage);
       router.push("/");
     } catch (error) {
-      if (axios.isAxiosError(error) && error.response) {
-        const errorMessage = error.response.data.error;
-        toast.error(errorMessage);
-      } else {
-        toast.error("Login Failed");
-      }
+      const errorMessage =
+        axios.isAxiosError(error) && error.response
+          ? error.response.data.error
+          : "Login Error";
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (user.email.length > 0 && user.password.length > 0) {
-      setButtonDisabled(false);
-    } else {
-      setButtonDisabled(true);
-    }
+    const isFormValid = user.email.length > 0 && user.password.length > 0;
+    setButtonDisabled(!isFormValid);
   }, [user]);
 
   return (
@@ -67,7 +62,7 @@ const LoginPage: React.FC = () => {
         id="email"
         value={user.email}
         onChange={onChange}
-        placeholder="email"
+        placeholder="Email"
       />
 
       <input
@@ -76,7 +71,7 @@ const LoginPage: React.FC = () => {
         id="password"
         value={user.password}
         onChange={onChange}
-        placeholder="password"
+        placeholder="Password"
       />
 
       <button
