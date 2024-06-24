@@ -5,25 +5,25 @@ import toast from "react-hot-toast";
 import Loader from "../components/Loader";
 import { useRouter } from "next/navigation";
 
+interface UserData {
+  username: string;
+  email: string;
+  isVerified: boolean;
+}
+
 const ProfilePage: React.FC = () => {
   const router = useRouter();
   const [loading, setLoading] = useState<boolean>(false);
-  const [data, setData] = useState<string>("");
+  const [userData, setUserData] = useState<UserData | "">("");
 
   const onLogout = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("/api/users/logout");
-      const successMessage = response.data.message;
-      toast.success(successMessage);
+      await axios.get("/api/users/logout");
+      toast.success("Logged Out Successfully");
       router.push("/login");
     } catch (error) {
-      if (axios.isAxiosError(error) && error.message) {
-        const errorMessage = error.response?.data.message;
-        toast.error(errorMessage);
-      } else {
-        toast.error("Logout failed");
-      }
+      toast.error("Logout Failed");
     } finally {
       setLoading(false);
     }
@@ -33,16 +33,22 @@ const ProfilePage: React.FC = () => {
     try {
       setLoading(true);
       const response = await axios.get("/api/users/me");
-      setData(response.data.data._id);
+      const user = response.data.data;
+      if (user) {
+        setUserData({
+          username: user.username,
+          email: user.email,
+          isVerified: user.isVerified,
+        });
+      }
       const successMessage = response.data.message;
       toast.success(successMessage);
     } catch (error) {
-      if (axios.isAxiosError(error) && error.message) {
-        const errorMessage = error.response?.data.message;
-        toast.error(errorMessage);
-      } else {
-        toast.error("Logout failed");
-      }
+      const errorMessage =
+        axios.isAxiosError(error) && error.message
+          ? error.response?.data.error
+          : "Internal Server Error";
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -50,21 +56,34 @@ const ProfilePage: React.FC = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2">
       <Loader loading={loading} />
-      <h1 className="text-2xl">Profile</h1>
-      <h2 className="my-3 text-xl">{data === "" ? "No user yet" : data}</h2>
+      <h1 className="text-2xl">Your Profile</h1>
+
+      {userData ? (
+        <div className="my-3 text-xl">
+          <p className="my-2 text-xl">Username : {userData.username}</p>
+          <p className="mt-2 text-xl">Email : {userData.email}</p>
+          <p className="mt-2 text-xl">
+            Email Verified : {userData.isVerified ? "Yes" : "No"}
+          </p>
+        </div>
+      ) : (
+        <p className="my-3 text-xl">
+          Click the button below to fetch your details
+        </p>
+      )}
 
       <button
-        className="px-4 py-2 mt-4 transition duration-200 bg-blue-800 rounded-lg cursor-pointer hover:bg-blue-600"
-        onClick={onLogout}
+        className="px-4 py-2 mt-4 transition duration-200 bg-green-800 rounded-lg cursor-pointer w-[116px] hover:bg-green-600"
+        onClick={getUserDetails}
       >
-        Logout
+        Get Details
       </button>
 
       <button
-        className="px-4 py-2 mt-4 transition duration-200 bg-green-800 rounded-lg cursor-pointer hover:bg-green-600"
-        onClick={getUserDetails}
+        className="px-4 py-2 mt-4 transition duration-200 bg-blue-800 rounded-lg cursor-pointer w-[116px] hover:bg-blue-600"
+        onClick={onLogout}
       >
-        Get User
+        Logout
       </button>
     </div>
   );
