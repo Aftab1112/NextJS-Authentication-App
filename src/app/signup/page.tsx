@@ -2,7 +2,7 @@
 import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React, { use, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import Loader from "../components/Loader";
@@ -83,7 +83,7 @@ const SignUpPage: React.FC = () => {
         const errorMessage = error.response.data.error;
         toast.error(errorMessage);
       } else {
-        toast.error("Signup Failed");
+        toast.error("Internal Server Error");
       }
     } finally {
       setLoading(false);

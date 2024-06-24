@@ -8,9 +8,6 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Next JS Authentication App",
   description: "A Next JS Authentication App",
-  icons: {
-    icon: "/logo.png",
-  },
 };
 
 export default function RootLayout({

@@ -4,12 +4,14 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import Loader from "../components/Loader";
+import { useRouter } from "next/navigation";
 
 const ForgotPasswordPage: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [emailError, setEmailError] = useState<string>("");
   const [buttonDisabled, setButtonDisabled] = useState<boolean>(true);
   const [loading, setloading] = useState<boolean>(false);
+  const router = useRouter();
 
   const validateEmail = (email: string): string | null => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -41,6 +43,7 @@ const ForgotPasswordPage: React.FC = () => {
       const response = await axios.post("/api/users/forgotpassword", { email });
       const successMessage = response.data.message;
       toast.success(successMessage);
+      router.push("/login");
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         const errorMessage = error.response.data.error;
