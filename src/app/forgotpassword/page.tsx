@@ -65,7 +65,7 @@ const ForgotPasswordPage: React.FC = () => {
         value={email}
         onChange={onChange}
         id="email"
-        placeholder="email"
+        placeholder="Email"
       />
       {emailError && <p className="mb-3 -mt-2 text-red-500">{emailError}</p>}
 
