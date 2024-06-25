@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import Loader from "../components/Loader";
+import Link from "next/link";
 
 const VerifyEmailPage: React.FC = () => {
   const [token, setToken] = useState<string>("");
@@ -61,7 +62,12 @@ const VerifyEmailPage: React.FC = () => {
           ) : (
             <div className="mb-4 text-2xl">
               {error ? (
-                <p>Link expired. Please try again later.</p>
+                <div className="flex flex-col items-center justify-center">
+                  <p>Link expired. Please try again later.</p>
+                  <Link href="/login" className="mt-2 text-xl text-blue-400">
+                    Back to login
+                  </Link>
+                </div>
               ) : (
                 <p>Verifying email...</p>
               )}
