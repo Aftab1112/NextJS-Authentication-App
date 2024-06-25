@@ -9,37 +9,40 @@ const VerifyEmailPage: React.FC = () => {
   const [token, setToken] = useState<string>("");
   const [verified, setVerified] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const router = useRouter();
 
   const verifyUserEmail = async () => {
     try {
       setLoading(true);
       const response = await axios.post("/api/users/verifyemail", { token });
-      const successMessage = response.data.message;
-      toast.success(successMessage);
+      toast.success(response.data.message);
       setVerified(true);
-      router.push("/");
+      setTimeout(() => {
+        router.push("/login");
+      }, 3200);
     } catch (error) {
       setError(true);
-      if (axios.isAxiosError(error) && error.response) {
-        const errorMessage = error.response.data.error;
-        toast.error(errorMessage);
-      } else {
-        toast.error("Internal server error");
-      }
+      const errorMessage =
+        axios.isAxiosError(error) && error.response
+          ? error.response.data.error
+          : "Internal server error";
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    const urlToken = window.location.search.split("=")[1];
+    const urlToken = new URLSearchParams(window.location.search).get("token");
     setToken(urlToken || "");
   }, []);
 
   useEffect(() => {
-    if (token.length > 0) {
+    if (!token) {
+      setError(true);
+      setLoading(false);
+    } else {
       verifyUserEmail();
     }
   }, [token]);
@@ -47,22 +50,24 @@ const VerifyEmailPage: React.FC = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2">
       <Loader loading={loading} />
-      <h1 className="text-4xl">Verify Email</h1>
-      <h2 className="mt-3 text-2xl">
-        {token ? `${token}` : "No token yet..."}
-      </h2>
-
-      {verified && (
-        <div>
-          <h2 className="text-2xl">Email verified</h2>
-          <h2 className="text-2xl">Redirecting to login page...</h2>
-        </div>
-      )}
-
-      {error && (
-        <div>
-          <h2 className="text-2xl">Error verifying email..</h2>
-        </div>
+      {!loading && (
+        <>
+          <h1 className="mb-6 text-4xl">Verify your email here</h1>
+          {verified ? (
+            <div className="mb-4 text-2xl">
+              <p>Email verified successfully.</p>
+              <p>Redirecting to login page...</p>
+            </div>
+          ) : (
+            <div className="mb-4 text-2xl">
+              {error ? (
+                <p>Link expired. Please try again later.</p>
+              ) : (
+                <p>Verifying email...</p>
+              )}
+            </div>
+          )}
+        </>
       )}
     </div>
   );

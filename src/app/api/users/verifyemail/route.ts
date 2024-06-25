@@ -16,12 +16,8 @@ export const POST = async (request: NextRequest) => {
 
     if (!user) {
       return NextResponse.json(
-        {
-          error: "User already verified or token expired",
-        },
-        {
-          status: 400,
-        }
+        { error: "User already verified or token expired" },
+        { status: 400 }
       );
     }
 
@@ -31,26 +27,14 @@ export const POST = async (request: NextRequest) => {
     await user.save();
 
     return NextResponse.json(
-      {
-        message: "Email verified successfully",
-        success: true,
-      },
-      {
-        status: 200,
-      }
+      { message: "Email verified successfully", success: true },
+      { status: 200 }
     );
   } catch (error) {
-    if (error instanceof Error) {
-      return NextResponse.json(
-        {
-          error: error.message,
-        },
-        {
-          status: 500,
-        }
-      );
-    } else {
-      console.log(error);
-    }
+    console.error("Error verifying email:", error);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 };
