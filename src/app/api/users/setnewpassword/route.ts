@@ -16,14 +16,7 @@ export const POST = async (request: NextRequest) => {
     });
 
     if (!user) {
-      return NextResponse.json(
-        {
-          error: "Link Expired",
-        },
-        {
-          status: 400,
-        }
-      );
+      return NextResponse.json({ error: "Link Expired" }, { status: 400 });
     }
 
     const salt = await bcryptjs.genSalt(10);
@@ -36,23 +29,17 @@ export const POST = async (request: NextRequest) => {
     await user.save();
 
     return NextResponse.json(
-      {
-        message: "Password changed successfully",
-      },
+      { message: "Password changed successfully" },
       { status: 200 }
     );
   } catch (error) {
-    if (error instanceof Error) {
-      return NextResponse.json(
-        {
-          error: error.message,
-        },
-        {
-          status: 500,
-        }
-      );
-    } else {
-      console.log(error);
-    }
+    console.error("Error changing password : ", error);
+    return NextResponse.json(
+      {
+        error:
+          error instanceof Error ? error.message : "An unknown error occurred",
+      },
+      { status: 500 }
+    );
   }
 };

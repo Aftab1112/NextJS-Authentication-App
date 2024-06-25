@@ -33,21 +33,17 @@ const SetNewPasswordPage: React.FC = () => {
   const [tokenExpiredError, setTokenExpiredError] = useState<boolean>(false);
   const router = useRouter();
 
-  const validatePassword = (password: string): string | null => {
-    if (password.length < 6) return "Password must be at least 6 characters";
-    return null;
-  };
+  const validatePassword = (password: string): string | null =>
+    password.length < 6 ? "Password must be at least 6 characters" : null;
 
-  const validateConfirmPassword = (confirmPassword: string): string | null => {
-    if (confirmPassword !== passwords.password) return "Passwords should match";
-    return null;
-  };
+  const validateConfirmPassword = (confirmPassword: string): string | null =>
+    confirmPassword !== passwords.password ? "Passwords should match" : null;
 
   const togglePasswordVisibility = (): void => {
     setPasswordVisible(!passwordVisible);
   };
 
-  const confirmPasswordVisibility = (): void => {
+  const toggleConfirmPasswordVisibility = (): void => {
     setconfirmPasswordVisible(!confirmPasswordVisible);
   };
 
@@ -71,15 +67,17 @@ const SetNewPasswordPage: React.FC = () => {
   };
 
   useEffect(() => {
-    const urlToken = window.location.search.split("=")[1];
+    const urlToken = new URLSearchParams(window.location.search).get("token");
     setToken(urlToken || "");
   }, []);
 
   useEffect((): void => {
-    const isSubmitValid =
-      !validatePassword(passwords.password) &&
-      !validateConfirmPassword(passwords.confirmPassword);
-    setbuttonDisabled(!isSubmitValid);
+    setbuttonDisabled(
+      !(
+        !validatePassword(passwords.password) &&
+        !validateConfirmPassword(passwords.confirmPassword)
+      )
+    );
   }, [passwords]);
 
   const onPasswordsSubmit = async () => {
@@ -90,17 +88,15 @@ const SetNewPasswordPage: React.FC = () => {
         password: passwords.password,
         token,
       });
-      const successMessage = response.data.message;
-      toast.success(successMessage);
+      toast.success(response.data.message);
       router.push("/login");
     } catch (error) {
-      if (axios.isAxiosError(error) && error.response) {
-        const errorMessage = error.response.data.error;
-        toast.error(errorMessage);
-        setTokenExpiredError(true);
-      } else {
-        toast.error("Internal server error");
-      }
+      const errorMessage =
+        axios.isAxiosError(error) && error.response
+          ? error.response.data.error
+          : "Internal Server Error";
+      toast.error(errorMessage);
+      setTokenExpiredError(true);
     } finally {
       setLoading(false);
     }
@@ -109,6 +105,7 @@ const SetNewPasswordPage: React.FC = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2">
       <Loader loading={loading} />
+
       <h1 className="text-4xl">Change Password</h1>
       <h2 className="mt-3 text-xl">Set a new password </h2>
 
@@ -152,13 +149,13 @@ const SetNewPasswordPage: React.FC = () => {
           <FaEye
             className="absolute right-0 mr-3 text-[25px] top-[24px] cursor-pointer"
             color="black"
-            onClick={confirmPasswordVisibility}
+            onClick={toggleConfirmPasswordVisibility}
           />
         ) : (
           <FaEyeSlash
             className="absolute right-0 mr-3 text-[25px] top-[24px] cursor-pointer"
             color="black"
-            onClick={confirmPasswordVisibility}
+            onClick={toggleConfirmPasswordVisibility}
           />
         )}
       </div>
