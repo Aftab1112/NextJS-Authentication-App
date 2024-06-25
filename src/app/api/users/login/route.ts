@@ -16,7 +16,7 @@ export const POST = async (request: NextRequest) => {
     if (!user) {
       return NextResponse.json(
         {
-          error: "User doesn't exist, please signup",
+          error: "User doesn't exist, please signup first",
         },
         {
           status: 404,
