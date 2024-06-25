@@ -31,10 +31,8 @@ const SignUpPage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [userErrors, setUserErrors] = useState<UserErrors>({});
 
-  const validateUsername = (username: string): string | null => {
-    if (username.length < 2) return "Username must be atleast 2 characters";
-    return null;
-  };
+  const validateUsername = (username: string): string | null =>
+    username.length < 2 ? "Username must be atleast 2 characters" : null;
 
   const validateEmail = (email: string): string | null => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -42,10 +40,8 @@ const SignUpPage: React.FC = () => {
     return null;
   };
 
-  const validatePassword = (password: string): string | null => {
-    if (password.length < 6) return "Password must be atleast 6 characters";
-    return null;
-  };
+  const validatePassword = (password: string): string | null =>
+    password.length < 6 ? "Password must be atleast 6 characters" : null;
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const { id, value } = e.target;
@@ -75,28 +71,27 @@ const SignUpPage: React.FC = () => {
     try {
       setLoading(true);
       const response = await axios.post("/api/users/signup", user);
-      const successMessage = response.data.message;
-      toast.success(successMessage);
+      toast.success(response.data.message);
       router.push("/login");
     } catch (error) {
-      if (axios.isAxiosError(error) && error.response) {
-        const errorMessage = error.response.data.error;
-        toast.error(errorMessage);
-      } else {
-        toast.error("Internal Server Error");
-      }
+      const errorMessage =
+        axios.isAxiosError(error) && error.response
+          ? error.response.data.error
+          : "Internal Server Error";
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    const isFormValid: boolean =
-      !validateUsername(user.username) &&
-      !validateEmail(user.email) &&
-      !validatePassword(user.password);
-
-    setButtonDisabled(!isFormValid);
+    setButtonDisabled(
+      !(
+        !validateUsername(user.username) &&
+        !validateEmail(user.email) &&
+        !validatePassword(user.password)
+      )
+    );
   }, [user]);
 
   return (

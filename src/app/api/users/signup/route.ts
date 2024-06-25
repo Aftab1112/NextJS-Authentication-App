@@ -15,17 +15,12 @@ export const POST = async (request: NextRequest) => {
 
     if (user) {
       return NextResponse.json(
-        {
-          error: "User already exists. Login below",
-        },
-        {
-          status: 400,
-        }
+        { error: "User already exists. Login below" },
+        { status: 400 }
       );
     }
 
-    const salt = await bcryptjs.genSalt(10);
-    const hashedPassword = await bcryptjs.hash(password, salt);
+    const hashedPassword = await bcryptjs.hash(password, 10);
 
     const newUser = new User({
       username,
@@ -47,24 +42,13 @@ export const POST = async (request: NextRequest) => {
       { status: 201 }
     );
   } catch (error) {
-    if (error instanceof Error) {
-      return NextResponse.json(
-        {
-          error: error.message,
-        },
-        {
-          status: 500,
-        }
-      );
-    } else {
-      return NextResponse.json(
-        {
-          error: "An unknown error occured",
-        },
-        {
-          status: 500,
-        }
-      );
-    }
+    console.error(error);
+    return NextResponse.json(
+      {
+        error:
+          error instanceof Error ? error.message : "An unknown error occurred",
+      },
+      { status: 500 }
+    );
   }
 };
