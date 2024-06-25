@@ -4,7 +4,7 @@ import bcryptjs from "bcryptjs";
 
 interface SendEmailParams {
   email: string;
-  emailType: string;
+  emailType: "VERIFY" | "RESET";
   userId: string;
 }
 
@@ -54,10 +54,7 @@ export const sendEmail = async ({
     const mailResponse = await transport.sendMail(mailOptions);
     return mailResponse;
   } catch (error) {
-    if (error instanceof Error) {
-      throw new Error(error.message);
-    } else {
-      console.log(error);
-    }
+    console.error("Error sending email:", error);
+    throw new Error("Failed to send email");
   }
 };
