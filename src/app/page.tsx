@@ -1,113 +1,331 @@
-import Image from "next/image";
+"use client";
+import axios from "axios";
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/components/ui/use-toast";
+import { MoonIcon, SunIcon } from "@radix-ui/react-icons";
+import { useTheme } from "next-themes";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { ButtonLoading } from "@/components/ui/buttonloading";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
-export default function Home() {
+interface UserData {
+  username: string;
+  email: string;
+  isVerified: boolean;
+}
+
+const technologies = [
+  { id: 1, name: "Next JS", logo: "/assets/nextjs.png" },
+  { id: 2, name: "React JS", logo: "/assets/react.png" },
+  { id: 3, name: "Typescript", logo: "/assets/typescript.png" },
+  { id: 4, name: "Mongo DB", logo: "/assets/mongodb.png" },
+  { id: 5, name: "Tailwind CSS", logo: "/assets/tailwind.png" },
+  { id: 6, name: "ShadCN UI", logo: "/assets/shadcn.png" },
+  { id: 7, name: "MaitTrap", logo: "/assets/mailtrap.png" },
+  { id: 8, name: "Vercel", logo: "/assets/vercel.png" },
+];
+
+const HomePage: React.FC = () => {
+  const router = useRouter();
+  const [loading, setLoading] = useState<boolean>(false);
+  const [logOutLoading, setLogOutLoading] = useState(false);
+  const [userData, setUserData] = useState<UserData | "">("");
+  const { toast } = useToast();
+  const { setTheme } = useTheme();
+
+  const onLogout = async () => {
+    try {
+      setLogOutLoading(true);
+      await axios.get("/api/users/logout");
+      toast({ title: "Logged Out Successfully" });
+      router.push("/login");
+    } catch (error) {
+      toast({ variant: "destructive", title: "Logout Failed" });
+    } finally {
+      setLogOutLoading(false);
+    }
+  };
+
+  const getUserDetails = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get("/api/users/me");
+      const user = response.data.data;
+      if (user) {
+        setUserData({
+          username: user.username,
+          email: user.email,
+          isVerified: user.isVerified,
+        });
+      }
+      const successMessage = response.data.message;
+      toast({ title: successMessage });
+    } catch (error) {
+      const errorMessage =
+        axios.isAxiosError(error) && error.message
+          ? error.response?.data.error
+          : "Internal Server Error";
+      toast({ variant: "destructive", title: errorMessage });
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:size-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+    <div className="w-full min-h-screen p-4 ">
+      <div className="flex items-center justify-between w-full mb-8">
+        <div className="flex justify-center flex-1 px-2">
+          <h1 className="text-4xl font-medium text-center md:ml-52 ">
+            A Next.JS Authentication App
+          </h1>
+        </div>
+
+        <div className="flex items-center space-x-6">
+          {logOutLoading ? (
+            <ButtonLoading>Logout</ButtonLoading>
+          ) : (
+            <Button
+              className="px-[25px] h-10"
+              variant="outline"
+              onClick={onLogout}
+            >
+              Logout
+            </Button>
+          )}
+
+          <div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button className="py-[19px] px-5" variant="outline">
+                  <SunIcon className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                  <MoonIcon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                  <span className="sr-only">Toggle theme</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => setTheme("light")}>
+                  Light
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTheme("dark")}>
+                  Dark
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTheme("system")}>
+                  System
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </div>
 
-      <div className="relative z-[-1] flex place-items-center before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 sm:before:w-[480px] sm:after:w-[240px] before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
+      <div className="flex flex-col items-center justify-center w-full ">
+        <p className="text-lg">
+          This application is designed to provide a seamless and secure
+          authentication experience. Here's what you can expect :
+        </p>
+        <div className="w-[980px] mt-3">
+          <Accordion type="single" collapsible className="w-full">
+            <AccordionItem value="item-1">
+              <AccordionTrigger className="text-base">
+                User Registration and Login
+              </AccordionTrigger>
+              <AccordionContent className="text-base">
+                Easily sign up and log in with a secure authentication system
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="item-2">
+              <AccordionTrigger className="text-base">
+                Password Management
+              </AccordionTrigger>
+              <AccordionContent className="text-base">
+                Reset your password effortlessly if you ever forget it.
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="item-3">
+              <AccordionTrigger className="text-base">
+                Email Verification
+              </AccordionTrigger>
+              <AccordionContent className="text-base">
+                Ensure the authenticity of your email address through a simple
+                verification process.
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="item-4">
+              <AccordionTrigger className="text-base">
+                User Profile Management{" "}
+              </AccordionTrigger>
+              <AccordionContent className="text-base">
+                View and manage your profile details such as username and email
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </div>
       </div>
 
-      <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Find in-depth information about Next.js features and API.
+      <div className="flex items-center justify-between w-full px-16 mt-4">
+        <div>
+          <p className="text-center text-base font-medium mb-[3px]">
+            Technologis I Used
           </p>
-        </a>
+          <Carousel className="w-full max-w-xs">
+            <CarouselContent>
+              {technologies.map((tech, id) => (
+                <CarouselItem key={id}>
+                  <div className="p-1">
+                    <Card>
+                      <CardContent className="flex items-center justify-center p-6 aspect-square">
+                        <div className="flex flex-col justify-between">
+                          <img
+                            className="w-52 h-52"
+                            src={tech.logo}
+                            alt="logo"
+                          />
 
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
+                          <h1 className="mt-2 text-lg font-medium text-center">
+                            {tech.name}
+                          </h1>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious />
+            <CarouselNext />
+          </Carousel>
+        </div>
 
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Explore starter templates for Next.js.
-          </p>
-        </a>
+        <div>
+          <p className="text-center text-base font-medium mb-[3px]">Author</p>
+          <Card>
+            <CardContent className="flex flex-col h-[310.4px] w-[310.4px] items-center justify-center">
+              <div className="flex flex-col justify-between gap-8">
+                <div>
+                  <h1 className="text-xl font-medium text-center">Made by</h1>
+                  <h1 className="text-4xl font-semibold text-center">AFTAB</h1>
+                </div>
+                <div className="flex items-center justify-center mt-4 space-x-10">
+                  <div>
+                    <a
+                      href="https://github.com/Aftab1112"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center w-16 h-16"
+                    >
+                      <img
+                        src="/assets/github2.png"
+                        alt="GitHub"
+                        className="object-cover transition-all duration-300 rounded-full hover:-translate-y-2"
+                      />
+                    </a>
+                    <p className="mt-1 text-sm text-center">Github</p>
+                  </div>
 
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-balance text-sm opacity-50">
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
+                  <div>
+                    <a
+                      href="https://www.linkedin.com/in/aftabreshamwale/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center w-16 h-16"
+                    >
+                      <img
+                        src="/assets/linkedin.png"
+                        alt="LinkedIn"
+                        className="object-cover transition-all duration-300 rounded-full hover:-translate-y-2"
+                      />
+                    </a>
+                    <p className="mt-1 text-sm text-center">LinkedIn</p>
+                  </div>
+
+                  <div>
+                    <a
+                      href="https://x.com/AReshamwale"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center w-16 h-16"
+                    >
+                      <img
+                        src="/assets/twitter.png"
+                        alt="Twitter"
+                        className="object-cover transition-all duration-300 rounded-full hover:-translate-y-2"
+                      />
+                    </a>
+                    <p className="mt-1 text-sm text-center">Twitter</p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div>
+          <p className="text-center text-base font-medium mb-[3px]">
+            User Details
           </p>
-        </a>
+          <Card>
+            <CardContent className="flex flex-col h-[310.4px] w-[310.4px] items-center justify-center">
+              {userData ? (
+                <>
+                  <h1 className="mb-8 text-3xl font-medium text-center ">
+                    Your Details
+                  </h1>
+                  <div className="flex flex-col items-start justify-center gap-2">
+                    <p className="text-lg">Username : {userData.username}</p>
+                    <p className="text-lg ">Email : {userData.email}</p>
+                    <p className="text-lg ">
+                      Email Verified : {userData.isVerified ? "Yes" : "No"}
+                    </p>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <p className="my-3 mb-10 text-xl font-medium text-center">
+                    Click the button below to fetch your details
+                  </p>
+
+                  {loading ? (
+                    <ButtonLoading>Getting Details</ButtonLoading>
+                  ) : (
+                    <Button
+                      className="px-[47px] "
+                      variant="outline"
+                      size="lg"
+                      onClick={getUserDetails}
+                    >
+                      Get details
+                    </Button>
+                  )}
+                </>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
-    </main>
+    </div>
   );
-}
+};
+
+export default HomePage;
