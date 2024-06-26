@@ -1,12 +1,13 @@
 "use client";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import toast from "react-hot-toast";
 import { FaEye } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa";
-import Loader from "../components/Loader";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { Input } from "@/components/ui/input";
+import { ButtonLoading } from "@/components/ui/buttonloading";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
 
 interface Passwords {
   password: string;
@@ -32,6 +33,7 @@ const SetNewPasswordPage: React.FC = () => {
   const [token, setToken] = useState<string>("");
   const [tokenExpiredError, setTokenExpiredError] = useState<boolean>(false);
   const router = useRouter();
+  const { toast } = useToast();
 
   const validatePassword = (password: string): string | null =>
     password.length < 6 ? "Password must be at least 6 characters" : null;
@@ -88,14 +90,15 @@ const SetNewPasswordPage: React.FC = () => {
         password: passwords.password,
         token,
       });
-      toast.success(response.data.message);
+      const successMessage = response.data.messsage;
+      toast({ title: successMessage });
       router.push("/login");
     } catch (error) {
       const errorMessage =
         axios.isAxiosError(error) && error.response
           ? error.response.data.error
           : "Internal Server Error";
-      toast.error(errorMessage);
+      toast({ variant: "destructive", title: errorMessage });
       setTokenExpiredError(true);
     } finally {
       setLoading(false);
@@ -104,57 +107,53 @@ const SetNewPasswordPage: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2">
-      <Loader loading={loading} />
+      <h1 className="text-4xl font-semibold ">Change Password</h1>
+      <h2 className="mt-3 mb-5 text-xl font-medium">Set a new password </h2>
 
-      <h1 className="text-4xl">Change Password</h1>
-      <h2 className="mt-3 text-xl">Set a new password </h2>
-
-      <div className="relative flex">
-        <input
-          className="px-4 py-2 my-4 text-black border-none rounded-lg"
+      <div className="w-[285px]  flex relative mt-4">
+        <Input
           type={passwordVisible ? "text" : "password"}
           id="password"
           value={passwords.password}
           placeholder="Set new password"
           onChange={onChange}
-        />
+        ></Input>
         {passwordVisible ? (
           <FaEye
-            className="absolute right-0 mr-3 text-[25px] top-[24px] cursor-pointer"
-            color="black"
+            className="absolute right-0 mr-3 text-[25px] top-[9px] cursor-pointer"
+            color="white"
             onClick={togglePasswordVisibility}
           />
         ) : (
           <FaEyeSlash
-            className="absolute right-0 mr-3 text-[25px] top-[24px] cursor-pointer"
-            color="black"
+            className="absolute right-0 mr-3 text-[25px] top-[9px] cursor-pointer"
+            color="white"
             onClick={togglePasswordVisibility}
           />
         )}
       </div>
       {passwordErrors.password && (
-        <p className="text-red-500">{passwordErrors.password}</p>
+        <p className="mt-2 text-red-500">{passwordErrors.password}</p>
       )}
 
-      <div className="relative flex">
-        <input
-          className="px-4 py-2 my-4 text-black border-none rounded-lg"
+      <div className="w-[285px] relative my-4">
+        <Input
           type={confirmPasswordVisible ? "text" : "password"}
           id="confirmPassword"
           value={passwords.confirmPassword}
           placeholder="Confirm new password"
           onChange={onChange}
-        />
+        ></Input>
         {confirmPasswordVisible ? (
           <FaEye
-            className="absolute right-0 mr-3 text-[25px] top-[24px] cursor-pointer"
-            color="black"
+            className="absolute right-0 mr-3 text-[25px] top-[8px] cursor-pointer"
+            color="white"
             onClick={toggleConfirmPasswordVisibility}
           />
         ) : (
           <FaEyeSlash
-            className="absolute right-0 mr-3 text-[25px] top-[24px] cursor-pointer"
-            color="black"
+            className="absolute right-0 mr-3 text-[25px] top-[8px] cursor-pointer"
+            color="white"
             onClick={toggleConfirmPasswordVisibility}
           />
         )}
@@ -163,24 +162,33 @@ const SetNewPasswordPage: React.FC = () => {
         <p className="text-red-500">{passwordErrors.confirmPassword}</p>
       )}
 
-      <button
-        className={`px-6 py-2 mt-3 transition duration-200 ${
-          buttonDisabled
-            ? "bg-gray-400 cursor-default"
-            : "bg-green-800 hover:bg-green-600"
-        } rounded-lg `}
-        onClick={onPasswordsSubmit}
-      >
-        Submit
-      </button>
+      <div className="mt-5">
+        {loading ? (
+          <ButtonLoading>Submitting</ButtonLoading>
+        ) : (
+          <Button
+            className="px-[45.5px]"
+            variant="outline"
+            size="lg"
+            disabled={buttonDisabled}
+            onClick={onPasswordsSubmit}
+          >
+            Submit
+          </Button>
+        )}
+      </div>
 
-      <div className="w-[322px] mt-3">
+      <div className="w-[340px] mt-6">
         {tokenExpiredError && (
-          <h2 className="text-center text-base">
-            Link is expired. <br /> Please visit{" "}
-            <Link href="/forgotpassword" className="text-blue-400">
+          <h2 className="text-lg text-center">
+            Link is expired. <br /> Please visit
+            <Button
+              className="px-1 text-blue-300"
+              variant="link"
+              onClick={() => router.push("/forgotpassword")}
+            >
               forgot password
-            </Link>{" "}
+            </Button>
             page
           </h2>
         )}
