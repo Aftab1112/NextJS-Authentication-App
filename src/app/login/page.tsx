@@ -59,7 +59,7 @@ const LoginPage: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2">
-      <h1 className="mb-2 text-3xl ">Login</h1>
+      <h1 className="mb-2 text-3xl font-semibold">Login</h1>
 
       <div className="w-[240px] py-3">
         <Input
