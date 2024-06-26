@@ -1,6 +1,5 @@
 "use client";
 import axios from "axios";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 import { useState } from "react";
@@ -36,8 +35,8 @@ const LoginPage: React.FC = () => {
       setLoading(true);
       const response = await axios.post("/api/users/login", user);
       const successMessage = response.data.message;
-      toast({ description: successMessage });
       router.push("/");
+      toast({ title: successMessage });
     } catch (error) {
       const errorMessage =
         axios.isAxiosError(error) && error.response
@@ -83,9 +82,10 @@ const LoginPage: React.FC = () => {
 
       <div className="py-3">
         {loading ? (
-          <ButtonLoading />
+          <ButtonLoading>Logging In</ButtonLoading>
         ) : (
           <Button
+            className="px-[51.5px]"
             variant="outline"
             size="lg"
             onClick={onLogin}
@@ -110,9 +110,9 @@ const LoginPage: React.FC = () => {
       <div className="flex items-center justify-center">
         <p className="ml-4">Forgot password ?</p>
         <Button
-          onClick={() => router.push("/forgotpassword")}
           className="text-base text-blue-300"
           variant="link"
+          onClick={() => router.push("/forgotpassword")}
         >
           Reset here
         </Button>

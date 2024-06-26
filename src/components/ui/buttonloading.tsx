@@ -1,12 +1,16 @@
+import React from "react";
 import { ReloadIcon } from "@radix-ui/react-icons";
-
 import { Button } from "@/components/ui/button";
 
-export function ButtonLoading() {
+interface ButtonLoadingProps {
+  children: React.ReactNode;
+}
+
+export const ButtonLoading: React.FC<ButtonLoadingProps> = ({ children }) => {
   return (
-    <Button variant="outline" size="lg" className="px-5" disabled>
-      <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-      Logging In
+    <Button className="h-10 rounded-md" disabled>
+      <ReloadIcon className="w-4 h-4 mr-2 animate-spin" />
+      {children}
     </Button>
   );
-}
+};
