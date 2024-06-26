@@ -96,18 +96,26 @@ const LoginPage: React.FC = () => {
         )}
       </div>
 
-      <div className="flex mt-4">
-        <p className="mr-2">New user ?</p>
-        <Link className="text-blue-300" href="/signup">
+      <div className="flex items-center justify-center mt-3">
+        <p className="ml-4">New user ?</p>
+        <Button
+          onClick={() => router.push("/signup")}
+          className="text-base text-blue-300"
+          variant="link"
+        >
           Sign up here
-        </Link>
+        </Button>
       </div>
 
-      <div className="flex mt-2">
-        <p className="mr-2">Forgot password ?</p>
-        <Link className="text-blue-300" href="/forgotpassword">
+      <div className="flex items-center justify-center">
+        <p className="ml-4">Forgot password ?</p>
+        <Button
+          onClick={() => router.push("/forgotpassword")}
+          className="text-base text-blue-300"
+          variant="link"
+        >
           Reset here
-        </Link>
+        </Button>
       </div>
     </div>
   );
