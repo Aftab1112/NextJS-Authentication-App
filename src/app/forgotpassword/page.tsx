@@ -1,10 +1,11 @@
 "use client";
 import axios from "axios";
-import Link from "next/link";
 import React, { useEffect, useState } from "react";
-import toast from "react-hot-toast";
-import Loader from "../components/Loader";
 import { useRouter } from "next/navigation";
+import { Input } from "@/components/ui/input";
+import { ButtonLoading } from "@/components/ui/buttonloading";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
 
 const ForgotPasswordPage: React.FC = () => {
   const [email, setEmail] = useState<string>("");
@@ -12,6 +13,7 @@ const ForgotPasswordPage: React.FC = () => {
   const [buttonDisabled, setButtonDisabled] = useState<boolean>(true);
   const [loading, setloading] = useState<boolean>(false);
   const router = useRouter();
+  const { toast } = useToast();
 
   const validateEmail = (email: string): string | null => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -32,14 +34,15 @@ const ForgotPasswordPage: React.FC = () => {
     try {
       setloading(true);
       const response = await axios.post("/api/users/forgotpassword", { email });
-      toast.success(response.data.message);
+      const successMessage = response.data.message;
+      toast({ title: successMessage });
       router.push("/login");
     } catch (error) {
       const errorMessage =
         axios.isAxiosError(error) && error.response
           ? error.response.data.error
           : "Internal Server Error";
-      toast.error(errorMessage);
+      toast({ variant: "destructive", title: errorMessage });
     } finally {
       setloading(false);
     }
@@ -51,38 +54,50 @@ const ForgotPasswordPage: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2">
-      <Loader loading={loading} />
-
-      <div className="flex flex-col justify-center items-center w-[320px]">
-        <h1 className="mb-2 text-3xl">Forgot Password</h1>
-        <p className="">Enter your email and we'll send you a link </p>
-        <p>to reset your password</p>
+      <div className="flex flex-col justify-center items-center w-[310px]">
+        <h1 className="mb-2 text-3xl font-semibold">Forgot Password</h1>
+        <p className="mt-2 text-lg">
+          Enter your email and we'll send <br />
+        </p>
+        <p className="text-lg">you a link to reset your password </p>
       </div>
 
-      <input
-        className="px-4 py-2 my-4 text-black border-none rounded-lg"
-        type="email"
-        value={email}
-        onChange={onChange}
-        id="email"
-        placeholder="Email"
-      />
+      <div className="w-[240px] py-3 mt-3">
+        <Input
+          type="email"
+          value={email}
+          onChange={onChange}
+          id="email"
+          placeholder="Email"
+        ></Input>
+      </div>
       {emailError && <p className="mb-3 -mt-2 text-red-500">{emailError}</p>}
 
-      <button
-        className={`px-6 py-2 mt-3 transition duration-200 ${
-          buttonDisabled
-            ? "bg-gray-400 cursor-default"
-            : "bg-green-800 hover:bg-green-600"
-        } rounded-lg `}
-        onClick={onEmailSubmit}
-      >
-        Submit
-      </button>
+      <div className="py-3">
+        {loading ? (
+          <ButtonLoading>Submitting</ButtonLoading>
+        ) : (
+          <Button
+            className="px-[46.5px]"
+            variant="outline"
+            size="lg"
+            onClick={onEmailSubmit}
+            disabled={buttonDisabled}
+          >
+            Submit
+          </Button>
+        )}
+      </div>
 
-      <Link className="mt-5 text-blue-300" href="/login">
-        Back to login
-      </Link>
+      <div className="flex items-center justify-center mt-2">
+        <Button
+          className="text-base text-blue-300"
+          variant="link"
+          onClick={() => router.push("/login")}
+        >
+          Back to login page
+        </Button>
+      </div>
     </div>
   );
 };
