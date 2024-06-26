@@ -2,22 +2,23 @@
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import toast from "react-hot-toast";
-import Loader from "../components/Loader";
-import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
 
 const VerifyEmailPage: React.FC = () => {
   const [token, setToken] = useState<string>("");
   const [verified, setVerified] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
+  const { toast } = useToast();
 
   const verifyUserEmail = async () => {
     try {
       setLoading(true);
       const response = await axios.post("/api/users/verifyemail", { token });
-      toast.success(response.data.message);
+      const successMessage = response.data.message;
+      toast({ title: successMessage });
       setVerified(true);
       setTimeout(() => {
         router.push("/login");
@@ -28,7 +29,7 @@ const VerifyEmailPage: React.FC = () => {
         axios.isAxiosError(error) && error.response
           ? error.response.data.error
           : "Internal server error";
-      toast.error(errorMessage);
+      toast({ variant: "destructive", title: errorMessage });
     } finally {
       setLoading(false);
     }
@@ -42,6 +43,7 @@ const VerifyEmailPage: React.FC = () => {
   useEffect(() => {
     if (!token) {
       setError(true);
+      toast({ variant: "destructive", title: "Link Expired" });
       setLoading(false);
     } else {
       verifyUserEmail();
@@ -50,23 +52,28 @@ const VerifyEmailPage: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2">
-      <Loader loading={loading} />
       {!loading && (
         <>
-          <h1 className="mb-6 text-4xl">Verify your email here</h1>
+          <h1 className="mb-6 text-3xl">Verify your email here</h1>
           {verified ? (
             <div className="mb-4 text-2xl">
-              <p>Email verified successfully.</p>
-              <p>Redirecting to login page...</p>
+              <p className="text-xl">Email verified successfully</p>
+              <p className="text-xl">Redirecting to login page....</p>
             </div>
           ) : (
             <div className="mb-4 text-2xl">
               {error ? (
                 <div className="flex flex-col items-center justify-center">
-                  <p>Link expired. Please try again later.</p>
-                  <Link href="/login" className="mt-2 text-xl text-blue-400">
+                  <p className="text-xl">
+                    Link is expired. Please try again later
+                  </p>
+                  <Button
+                    className="mt-2 text-lg text-blue-300"
+                    variant="link"
+                    onClick={() => router.push("/login")}
+                  >
                     Back to login
-                  </Link>
+                  </Button>
                 </div>
               ) : (
                 <p>Verifying email...</p>
