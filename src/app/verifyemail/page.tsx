@@ -43,7 +43,6 @@ const VerifyEmailPage: React.FC = () => {
   useEffect(() => {
     if (!token) {
       setError(true);
-      toast({ variant: "destructive", title: "Link Expired" });
       setLoading(false);
     } else {
       verifyUserEmail();
@@ -54,17 +53,21 @@ const VerifyEmailPage: React.FC = () => {
     <div className="flex flex-col items-center justify-center min-h-screen py-2">
       {!loading && (
         <>
-          <h1 className="mb-6 text-3xl">Verify your email here</h1>
+          <h1 className="mb-6 text-3xl text-center">Verify your email here</h1>
           {verified ? (
             <div className="mb-4 text-2xl">
-              <p className="text-xl">Email verified successfully</p>
-              <p className="text-xl">Redirecting to login page....</p>
+              <p className="text-xl text-center">
+                Email verification successfull
+              </p>
+              <p className="text-xl text-center">
+                Redirecting to login page....
+              </p>
             </div>
           ) : (
             <div className="mb-4 text-2xl">
               {error ? (
                 <div className="flex flex-col items-center justify-center">
-                  <p className="text-xl">
+                  <p className="text-xl text-center">
                     Link is expired. Please try again later
                   </p>
                   <Button
@@ -76,7 +79,7 @@ const VerifyEmailPage: React.FC = () => {
                   </Button>
                 </div>
               ) : (
-                <p>Verifying email...</p>
+                <p className="text-center">Verifying email...</p>
               )}
             </div>
           )}
