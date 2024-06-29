@@ -27,6 +27,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import Image from "next/image";
 
 interface UserData {
   username: string;
@@ -140,7 +141,7 @@ const HomePage: React.FC = () => {
       <div className="flex flex-col items-center justify-center w-full ">
         <p className="text-lg">
           This application is designed to provide a seamless and secure
-          authentication experience. Here's what you can expect :
+          authentication experience. Here&apos;s what you can expect :
         </p>
         <div className="w-[980px] mt-3">
           <Accordion type="single" collapsible className="w-full">
@@ -197,7 +198,7 @@ const HomePage: React.FC = () => {
                     <Card>
                       <CardContent className="flex items-center justify-center p-6 aspect-square">
                         <div className="flex flex-col justify-between">
-                          <img
+                          <Image
                             className="w-52 h-52"
                             src={tech.logo}
                             alt="logo"
@@ -235,7 +236,7 @@ const HomePage: React.FC = () => {
                       rel="noopener noreferrer"
                       className="flex items-center justify-center w-16 h-16"
                     >
-                      <img
+                      <Image
                         src="/assets/github2.png"
                         alt="GitHub"
                         className="object-cover transition-all duration-300 rounded-full hover:-translate-y-2"
@@ -251,7 +252,7 @@ const HomePage: React.FC = () => {
                       rel="noopener noreferrer"
                       className="flex items-center justify-center w-16 h-16"
                     >
-                      <img
+                      <Image
                         src="/assets/linkedin.png"
                         alt="LinkedIn"
                         className="object-cover transition-all duration-300 rounded-full hover:-translate-y-2"
@@ -267,7 +268,7 @@ const HomePage: React.FC = () => {
                       rel="noopener noreferrer"
                       className="flex items-center justify-center w-16 h-16"
                     >
-                      <img
+                      <Image
                         src="/assets/twitter.png"
                         alt="Twitter"
                         className="object-cover transition-all duration-300 rounded-full hover:-translate-y-2"

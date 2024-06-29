@@ -57,7 +57,7 @@ const ForgotPasswordPage: React.FC = () => {
       <div className="flex flex-col justify-center items-center w-[310px]">
         <h1 className="mb-2 text-3xl font-semibold">Forgot Password</h1>
         <p className="mt-2 text-lg">
-          Enter your email and we'll send <br />
+          Enter your email and we&apos;ll send <br />
         </p>
         <p className="text-lg">you a link to reset your password </p>
       </div>
