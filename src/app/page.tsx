@@ -52,7 +52,7 @@ const HomePage: React.FC = () => {
   const [logOutLoading, setLogOutLoading] = useState(false);
   const [userData, setUserData] = useState<UserData | "">("");
   const { toast } = useToast();
-  const { setTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
 
   const onLogout = async () => {
     try {
