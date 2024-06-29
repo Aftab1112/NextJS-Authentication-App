@@ -200,6 +200,8 @@ const HomePage: React.FC = () => {
                         <div className="flex flex-col justify-between">
                           <Image
                             className="w-52 h-52"
+                            width={500}
+                            height={500}
                             src={tech.logo}
                             alt="logo"
                           />
@@ -237,6 +239,8 @@ const HomePage: React.FC = () => {
                       className="flex items-center justify-center w-16 h-16"
                     >
                       <Image
+                        width={200}
+                        height={200}
                         src="/assets/github2.png"
                         alt="GitHub"
                         className="object-cover transition-all duration-300 rounded-full hover:-translate-y-2"
@@ -253,6 +257,8 @@ const HomePage: React.FC = () => {
                       className="flex items-center justify-center w-16 h-16"
                     >
                       <Image
+                        width={200}
+                        height={200}
                         src="/assets/linkedin.png"
                         alt="LinkedIn"
                         className="object-cover transition-all duration-300 rounded-full hover:-translate-y-2"
@@ -269,6 +275,8 @@ const HomePage: React.FC = () => {
                       className="flex items-center justify-center w-16 h-16"
                     >
                       <Image
+                        width={200}
+                        height={200}
                         src="/assets/twitter.png"
                         alt="Twitter"
                         className="object-cover transition-all duration-300 rounded-full hover:-translate-y-2"

@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-const Page = () => {
+const ProfilePage = () => {
   const { setTheme } = useTheme();
   return (
     <div>
@@ -39,4 +39,4 @@ const Page = () => {
   );
 };
 
-export default Page;
+export default ProfilePage;

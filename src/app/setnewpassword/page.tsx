@@ -80,7 +80,7 @@ const SetNewPasswordPage: React.FC = () => {
         !validateConfirmPassword(passwords.confirmPassword)
       )
     );
-  }, [passwords]);
+  }, [validatePassword, validateConfirmPassword]);
 
   const onPasswordsSubmit = async () => {
     if (buttonDisabled) return;
@@ -90,8 +90,7 @@ const SetNewPasswordPage: React.FC = () => {
         password: passwords.password,
         token,
       });
-      const successMessage = response.data.messsage;
-      toast({ title: successMessage });
+      toast({ title: "Password Changed Successfully" });
       router.push("/login");
     } catch (error) {
       const errorMessage =
